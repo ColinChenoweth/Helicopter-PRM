@@ -2,6 +2,23 @@ import time
 import sim
 
 
+def get_object_bbox_size(clientID, object_handle):
+    _, max_x = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_max_x, sim.simx_opmode_blocking)
+    _, min_x = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_min_x, sim.simx_opmode_blocking)
+    
+    _, max_y = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_max_y, sim.simx_opmode_blocking)
+    _, min_y = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_min_y, sim.simx_opmode_blocking)
+    
+    _, max_z = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_max_z, sim.simx_opmode_blocking)
+    _, min_z = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_min_z, sim.simx_opmode_blocking)
+    
+    size_x = max_x - min_x
+    size_y = max_y - min_y
+    size_z = max_z - min_z
+    
+    print(size_x, size_y, size_z)
+
+
 def move_target(clientID, target_handle, target_position):
     print_object_position(clientID, target_handle)
     # Set the position of the target object
@@ -33,15 +50,19 @@ def main():
     print('Connected to CoppeliaSim')
     
     # Get handle of the helicopter object
-    _, target_handle = sim.simxGetObjectHandle(clientID, 'Helicopter_target', sim.simx_opmode_oneshot_wait)
-    
+    _, target_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter_target', sim.simx_opmode_oneshot_wait)
+    _, quad_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter', sim.simx_opmode_oneshot_wait)
+
+
     if target_handle == -1:
         print('Failed to get handle of the target object')
         sim.simxFinish(clientID)
         return
     
     # Move the helicopter forward and then back
-    move_target(clientID, target_handle, [0, -2, 5])
+    move_target(clientID, target_handle, [0, -1, 5])
+
+    get_object_bbox_size(clientID, quad_handle)
 
     # Disconnect from CoppeliaSim
     sim.simxFinish(clientID)
