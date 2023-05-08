@@ -1,41 +1,31 @@
+import numpy as np
 import time
 import sim
+import PRM
 
 
-def get_object_bbox_size(clientID, object_handle):
-    _, max_x = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_max_x, sim.simx_opmode_blocking)
-    _, min_x = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_min_x, sim.simx_opmode_blocking)
-    
-    _, max_y = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_max_y, sim.simx_opmode_blocking)
-    _, min_y = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_min_y, sim.simx_opmode_blocking)
-    
-    _, max_z = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_max_z, sim.simx_opmode_blocking)
-    _, min_z = sim.simxGetObjectFloatParameter(clientID, object_handle, sim.sim_objfloatparam_objbbox_min_z, sim.simx_opmode_blocking)
-    
-    size_x = max_x - min_x
-    size_y = max_y - min_y
-    size_z = max_z - min_z
-    
-    print(size_x, size_y, size_z)
+def move_start_goal(clientID, target_handle, quad_handle, start, goal):
+    obs = np.array([[0, 0, 5, 1.5, 1.5, 1.5]])
+    path = PRM.generate_path(start, goal, 10, obs)
+    for i in range(len(path)):
+        move_target(clientID, target_handle, path[i])
+        cur_pos = get_object_position(clientID, quad_handle)
+        while (cur_pos < path[i] - 0.25).any() or (cur_pos > path[i] + 0.25).any():
+            time.sleep(1)
+
 
 
 def move_target(clientID, target_handle, target_position):
-    print_object_position(clientID, target_handle)
     # Set the position of the target object
     sim.simxSetObjectPosition(clientID, target_handle, -1, target_position, sim.simx_opmode_oneshot)
-    print('Moved the target object to the new position')
-    print_object_position(clientID, target_handle)
 
 
 
-def print_object_position(clientID, object_handle):
+def get_object_position(clientID, object_handle):
     # Get the position of the object
     _, object_position = sim.simxGetObjectPosition(clientID, object_handle, -1, sim.simx_opmode_blocking)
     
-    if _ == sim.simx_return_ok:
-        print(f"Object position: {object_position}")
-    else:
-        print("Failed to get object position")
+    return object_position
 
 
 def main():
@@ -53,16 +43,14 @@ def main():
     _, target_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter_target', sim.simx_opmode_oneshot_wait)
     _, quad_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter', sim.simx_opmode_oneshot_wait)
 
-
-    if target_handle == -1:
+    if target_handle == -1 or quad_handle == -1:
         print('Failed to get handle of the target object')
         sim.simxFinish(clientID)
         return
     
-    # Move the helicopter forward and then back
-    move_target(clientID, target_handle, [0, -1, 5])
-
-    get_object_bbox_size(clientID, quad_handle)
+    start = (0, -4, 5)
+    goal = (0, 4, 5)
+    move_start_goal(clientID, target_handle, quad_handle, start, goal)
 
     # Disconnect from CoppeliaSim
     sim.simxFinish(clientID)
