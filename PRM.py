@@ -19,33 +19,32 @@ def generate_path(start, goal, num_nodes, obs):
     path = bfs(roadmap, p1, p2)
     if path == []:
         return []
-    path.append(start)
-    path.reverse()
     path.append(goal)
     return path
 
 
 def bfs(roadmap, p1, p2):
     path = []
-    explored = []
+    explored = {}
     queue = [(p1,"Start")]
-    while queue.len() > 0 and p2 not in roadmap[queue[0, 0]]:
-        cur = queue[0,0]
-        explored.append(queue[0])
-        children = roadmap[cur]
+    while len(queue) > 0 and p2 not in roadmap[queue[0][0]]:
+        cur = queue[0][0]
+        explored[cur] = queue[0][1]
+        children = roadmap[tuple(cur)]
         queue.remove(queue[0])
         for i in range(len(children)):
-            if children[i] not in explored[:,0]:
+            if children[i] not in explored:
                 queue.append((children[i], cur))
-        return
-    if queue.len == 0:
+    if len(queue) == 0:
         return []
     path.append(p2)
-    cur = queue[0]
-    while cur[1] != "Start":
-        path.append(cur[0])
-        cur = explored[explored[:,0] == cur[1]]
+    cur = queue[0][0]
+    explored[cur] = queue[0][1]
+    while explored[cur] != "Start":
+        path.append(cur)
+        cur = explored[cur]
     path.append(p1)
+    path.reverse()
     return path
 
 
@@ -121,6 +120,7 @@ def valid_path(q1, q2, obs):
         for p in planes:
             intersect = p.intersection(segment)
             if len(intersect) != 0:
-                if intersect >= o_min.all() and intersect <= o_max.all():
-                    return False
+                for i in range(len(intersect)):
+                    if (intersect[i][:] >= o_min).all() and (intersect[i][:] <= o_max).all():
+                        return False
     return True
