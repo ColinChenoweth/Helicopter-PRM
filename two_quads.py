@@ -29,6 +29,12 @@ def move_start_goal(clientID, target_handle, quad_handle, start, goal):
     
     print('Generating path')
     path = PRM.generate_path(start, goal, 10, obs)
+
+    # for fast testing
+    # if goal == (0, -4, 5):
+    #     path = [(1.8555338530030134, 1.4652957210390323, 4.230882435623776), (2.753393132968016, 1.5365383838603872, 4.0188706112645), (1.8555338530030134, 1.4652957210390323, 4.230882435623776), (0, -4, 5)]
+    # else:
+    #     path = [(3.076044060039079, 1.2153788854989962, 2.1726900620985194), (2.685302321070747, 2.925391595515519, 2.0063582194057306), (1.8463993322491055, 3.658439416253085, 3.1699963668226836), (1.0845518634931057, 3.66628265949352, 3.5468239494748026), (0, 4, 5)]
     print('Path generated:')
 
     print(path)
@@ -65,11 +71,11 @@ def main():
     print('Connected to CoppeliaSim')
 
     # Get handle of the helicopter objects and their targets
-    _, target1_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter1_target', sim.simx_opmode_oneshot_wait)
+    _, target1_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter_target', sim.simx_opmode_oneshot_wait)
     _, quad1_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter1', sim.simx_opmode_oneshot_wait)
 
-    _, target2_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter2_target', sim.simx_opmode_oneshot_wait)
-    _, quad2_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter2', sim.simx_opmode_oneshot_wait)
+    _, target2_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter_target#0', sim.simx_opmode_oneshot_wait)
+    _, quad2_handle = sim.simxGetObjectHandle(clientID, 'Quadcopter2#0', sim.simx_opmode_oneshot_wait)
 
     if target1_handle == -1 or quad1_handle == -1 or target2_handle == -1 or quad2_handle == -1:
         print('Failed to get handle of the target object')
