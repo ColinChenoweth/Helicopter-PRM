@@ -123,4 +123,5 @@ def valid_path(q1, q2, obs):
                 for i in range(len(intersect)):
                     if (intersect[i][:] >= o_min).all() and (intersect[i][:] <= o_max).all():
                         return False
+                break
     return True
