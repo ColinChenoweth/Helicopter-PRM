@@ -5,30 +5,11 @@ import PRM
 import threading
 
 
-"""def move_start_goal(clientID, quad_handle, start, goal):
-    obs = np.array([[0, 0, 5, 1.5, 1.5, 1.5]])
-    path = PRM.generate_path(start, goal, 10, obs)
-    for i in range(len(path)):
-        move_quad(clientID, quad_handle, path[i])
-        cur_pos = get_object_position(clientID, quad_handle)
-        p_cur = np.array(cur_pos)
-        p_goal = np.array(path[i])
-        while np.linalg.norm(p_goal - p_cur) > 0.25:
-            print(f'Current position: {p_cur}, Goal position: {p_goal}, Distance: {np.linalg.norm(p_goal - p_cur)}')
-            time.sleep(3)
-            cur_pos = get_object_position(clientID, quad_handle)
-            p_cur = np.array(cur_pos)
-
-def move_quad(clientID, quad_handle, quad_position):
-    # Set the position of the quadcopter directly
-    sim.simxSetObjectPosition(clientID, quad_handle, -1, quad_position, sim.simx_opmode_blocking)"""
-
-
 def move_start_goal(clientID, target_handle, quad_handle, start, goal):
-    obs = np.array([[0, 0, 5, 1.5, 1.5, 1.5]])
+    obs = np.array([[0, 0, 5, 1.75, 1.75, 1.75], [0, 0, 7.5, 0.75, 0.75, 0.75], [0, 0, 2.5, 0.75, 0.75, 0.75], [-2.5, 0, 5, 0.75, 0.75, 0.75], [2.5, 0, 5, 0.75, 0.75, 0.75]])
     
     print('Generating path')
-    path = PRM.generate_path(start, goal, 10, obs)
+    path = PRM.generate_path(start, goal, 15, obs)
 
     # for fast testing
     # if goal == (0, -4, 5):
@@ -90,9 +71,6 @@ def main():
     # Create threads for each robot
     thread1 = threading.Thread(target=move_start_goal, args=(clientID, target1_handle, quad1_handle, start, goal))
     thread2 = threading.Thread(target=move_start_goal, args=(clientID, target2_handle, quad2_handle, goal, start))
-
-    """thread1 = threading.Thread(target=move_start_goal, args=(clientID, quad1_handle, start, goal))
-    thread2 = threading.Thread(target=move_start_goal, args=(clientID, quad2_handle, goal, start))"""
 
 
     # Start the threads
