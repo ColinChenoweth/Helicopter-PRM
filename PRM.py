@@ -77,12 +77,19 @@ def add_paths(nodes, obs):
         sorted_indices = np.argsort(dists)
         lowest_indices = []
         j = 1
-        while len(lowest_indices) < 3:
+        if tuple(nodes[i]) not in list(roadmap.keys()):
+            roadmap[tuple(nodes[i])] = []
+        while len(lowest_indices) + len(roadmap[tuple(nodes[i])]) < 3:
             if valid_path(nodes[i], nodes[sorted_indices[j]], obs):
                 lowest_indices.append(sorted_indices[j])
             j += 1
-        closest = nodes[lowest_indices].tolist()
-        roadmap[tuple(nodes[i])] = [tuple(element) for element in closest]
+        if len(lowest_indices) > 0:
+            closest = nodes[lowest_indices].tolist()
+            for element in closest:
+                if tuple(element) not in list(roadmap.keys()):
+                    roadmap[tuple(element)] = []
+                roadmap[tuple(element)].append(tuple(nodes[i]))
+                roadmap[tuple(nodes[i])].append(tuple(element))
     return roadmap
 
 def valid_pos(pos, obs):
